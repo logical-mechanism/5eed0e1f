@@ -12,7 +12,7 @@ pub enum NEWMCommands {
     /// View Sale Information
     View(view_sale::ViewSaleArgs),
     // Create Order For Sale
-    Create,
+    Create(create_order::CreateOrderArgs),
 }
 
 #[derive(Args)]
@@ -25,6 +25,6 @@ pub async fn run(args: NEWMArgs, preprod_flag: bool) -> Result<(), String> {
     match args.command {
         NEWMCommands::View(args) => view_sale::run(args, preprod_flag).await,
         NEWMCommands::Guide => Ok(guide::run(preprod_flag)),
-        NEWMCommands::Create => Ok(create_order::run(preprod_flag)),
+        NEWMCommands::Create(args) => create_order::run(args, preprod_flag).await,
     }
 }

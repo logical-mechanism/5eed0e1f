@@ -523,7 +523,7 @@ pub async fn nft_utxo(
         .await?;
 
     let utxos: Vec<UtxoResponse> = response.json().await?;
-
+    println!("{:?}", utxos);
     if utxos.len() > 1 {
         return Ok(vec![]);
     }
