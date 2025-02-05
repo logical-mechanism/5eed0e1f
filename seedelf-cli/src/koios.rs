@@ -504,7 +504,7 @@ pub async fn nft_utxo(
     network_flag: bool,
 ) -> Result<Vec<UtxoResponse>, Error> {
     let network: &str = if network_flag { "preprod" } else { "api" };
-    let url: String = format!("https://{}.koios.rest/api/v1/asset_utxos", network);
+    let url: String = format!("https://{}.koios.rest/api/v1/asset_utxos?&order=block_height.asc", network);
     let client: Client = reqwest::Client::new();
 
     // Prepare the request payload
@@ -522,12 +522,8 @@ pub async fn nft_utxo(
         .send()
         .await?;
 
-    let utxos: Vec<UtxoResponse> = response.json().await?;
-    println!("{:?}", utxos);
-    if utxos.len() > 1 {
-        return Ok(vec![]);
-    }
-
+    let mut utxos: Vec<UtxoResponse> = response.json().await?;
+    utxos.reverse();
     Ok(utxos)
 }
 

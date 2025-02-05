@@ -1,8 +1,35 @@
 use hex::FromHex;
 use pallas_primitives::{
     alonzo::{Constr, MaybeIndefArray, PlutusData},
-    BoundedBytes, Fragment,
+    BoundedBytes, Fragment, BigInt
 };
+
+
+#[test]
+fn test_nested_struct() {
+    let generator = "97f1d3a73197d7942695638c4fa9ac0fc3688c4f9774b905a14e3a3f";
+    let public_value = "aafdf5aaed4bae8122d02990b67b9030c8fe352dc40c5823cce4588e";
+    let gb = Vec::from_hex(&generator).expect("Invalid hex string");
+    let pvb = Vec::from_hex(&public_value).expect("Invalid hex string");
+
+    let d = PlutusData::Constr(Constr {
+        tag: 121,
+        any_constructor: None,
+        fields: MaybeIndefArray::Indef(vec![
+            PlutusData::Constr(Constr {
+                tag: 121,
+                any_constructor: None,
+                fields: MaybeIndefArray::Indef(vec![
+                    PlutusData::BoundedBytes(BoundedBytes::from(gb)),
+                    PlutusData::BoundedBytes(BoundedBytes::from(pvb)),
+                ]),
+            }),
+            PlutusData::BigInt(BigInt::Int(4.into()))
+        ]),
+    });
+    let x = hex::encode(d.encode_fragment().unwrap());
+    assert_eq!(x, "d8799fd8799f581c97f1d3a73197d7942695638c4fa9ac0fc3688c4f9774b905a14e3a3f581caafdf5aaed4bae8122d02990b67b9030c8fe352dc40c5823cce4588effff")
+}
 
 #[test]
 fn test_register_datum() {
